@@ -1,9 +1,25 @@
 ﻿using System;
+using System.Data.Common;
 using System.IO;
+using System.Reflection.PortableExecutable;
+using System.Text;
 using System.Xml.Linq;
 
 class Program
  {
+    static void print_array(int[,]newarr, int row, int column) 
+    {
+        Console.WriteLine("Sorted Array");
+        for (int i = 0; i < row; i++)
+        {
+            for (int j = 0; j < column; j++)
+            {
+                Console.Write("[{0}][{1}]:", i + 1, j + 1);
+                Console.Write(newarr[i, j] + " ");
+            }
+            Console.WriteLine(" ");
+        }
+    }
 
     static int inputValidation(string a,int b)
     {
@@ -30,6 +46,246 @@ class Program
         }
         return b;
     }
+
+    static void save_result_to_file(StreamWriter rewrite,int row, int column, string path, int[,] newarr,bool app)
+    { 
+        rewrite = new StreamWriter(path, app);
+        rewrite.WriteLine(row.ToString());
+        rewrite.WriteLine(column.ToString());
+        //string? file_str;
+        for (int i = 0; i < row; i++)
+        {
+            for (int j = 0; j < column; j++)
+            {
+                File.WriteAllText(path, newarr[i,j].ToString());
+                //file_str = newarr[i, j].ToString();
+                //rewrite.WriteLine(file_str.ToString());
+
+                //file_str = newarr[i, j].ToString();
+                //var stringBuilder = new StringBuilder();
+                // stringBuilder.AppendLine(newarr[i, j].ToString());
+            }
+        }
+        
+    }
+
+    static void save_all_res(int[,]newarr, int row, int column)
+    {
+        string save_results;
+        Console.Write("Do you want to save results to a file?(y/n): ");
+        do
+        {
+            save_results = Console.ReadLine()!;
+            if (save_results == "y" || save_results == "Y")
+            {
+                Console.WriteLine("yes");
+                Console.Write("Enter file name: ");
+                string path = Console.ReadLine()!;
+                if (File.Exists(path))
+                {
+                    string file_exist;
+                    bool reader;
+                    Console.WriteLine("File already exists! do you want to rewrite(rw), append(a) or create a new file(nf)?:");
+                    do
+                    {
+                        file_exist = Console.ReadLine()!;
+                        if (file_exist == "rw" || file_exist == "rW" || file_exist == "Rw" || file_exist == "RW")
+                        {
+                            Console.WriteLine("Rewriting file...");
+                            reader = false;
+
+
+                            StreamWriter rewrite = new StreamWriter(path, reader);
+
+                            save_result_to_file(rewrite, row,
+                                column, path, newarr, reader);
+                            /* using (StreamWriter rewrite = new StreamWriter(path,false))
+                             {
+                                 rewrite.WriteLine(row);
+                                 rewrite.WriteLine(column);
+                                 for(int i=0;i<row;i++)
+                                 {
+                                     for(int j = 0;j < column; j++)
+                                     {
+                                         rewrite.WriteLine(newarr[i,j]);
+                                     }
+                                 }
+                             }*/
+                            break;
+                        }
+                        else if (file_exist == "a" || file_exist == "A")
+                        {
+                            Console.WriteLine("Appending file...");
+                            reader = true;
+                            StreamWriter appending = new StreamWriter(path, reader);
+                            save_result_to_file(appending, row,
+                                column, path, newarr, reader);
+
+                            /*using (StreamWriter appending = new StreamWriter(path, true))
+                            {
+                                appending.WriteLine("appended text");
+                                appending.WriteLine(row);
+                                appending.WriteLine(column);
+                                for (int i = 0; i < row; i++)
+                                {
+                                    for (int j = 0; j < column; j++)
+                                    {
+                                        appending.WriteLine(newarr[i, j]);
+                                    }
+                                }
+                            }*/
+                            break;
+                        }
+                        else if (file_exist == "nf" || file_exist == "nF" || file_exist == "Nf" || file_exist == "NF")
+                        {
+                            Console.WriteLine("Creating new file...");
+                            Console.Write("Enter file name: ");
+                            string nfile = Console.ReadLine()!;
+                            while (File.Exists(nfile))
+                            {
+                                Console.Write("File already exists! Enter a different file name: ");
+                                nfile = Console.ReadLine()!;
+                            }
+
+                            StreamWriter new_file = new StreamWriter(nfile);
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid input, try again: ");
+                        }
+
+                    } while (file_exist != "rw" || file_exist != "rW" || file_exist != "Rw" || file_exist != "RW" ||
+                             file_exist != "a" || file_exist != "A" ||
+                             file_exist != "nf" || file_exist != "nF" || file_exist != "Nf" || file_exist != "NF");
+
+                }
+
+                //StreamWriter file = new StreamWriter(path);
+                break;
+            }
+            else if (save_results == "n" || save_results == "N")
+            {
+                Console.WriteLine("no");
+                break;
+            }
+            else
+                Console.WriteLine("Invalid input, try again: ");
+
+
+        } while (save_results != "y" || save_results != "Y" || save_results == "n" || save_results == "N");
+
+    }
+
+    static void save_initial(int[,]newarr, int row, int column)
+    {
+        Console.Write("Do you want to save initial data for file?(y/n)");
+        string save_initial;
+        do
+        {
+            save_initial = Console.ReadLine()!;
+            if (save_initial == "y" || save_initial == "Y")
+            {
+                Console.WriteLine("yes");
+                Console.Write("Enter file name: ");
+                string initial_path = Console.ReadLine()!;
+                StreamWriter rewrite = new StreamWriter(initial_path);
+                if (File.Exists(initial_path))
+                {
+                    string file_exist;
+                    bool reader;
+                    Console.WriteLine("File already exists! do you want to rewrite(rw), append(a) or create a new file(nf)?:");
+                    do
+                    {
+                        file_exist = Console.ReadLine()!;
+                        if (file_exist == "rw" || file_exist == "rW" || file_exist == "Rw" || file_exist == "RW")
+                        {
+                            Console.WriteLine("Rewriting file...");
+                            reader = false;
+
+
+                            rewrite = new StreamWriter(initial_path, reader);
+
+                            save_result_to_file(rewrite, row,
+                                column, initial_path, newarr, reader);
+                            /* using (StreamWriter rewrite = new StreamWriter(path,false))
+                             {
+                                 rewrite.WriteLine(row);
+                                 rewrite.WriteLine(column);
+                                 for(int i=0;i<row;i++)
+                                 {
+                                     for(int j = 0;j < column; j++)
+                                     {
+                                         rewrite.WriteLine(newarr[i,j]);
+                                     }
+                                 }
+                             }*/
+                            break;
+                        }
+                        else if (file_exist == "a" || file_exist == "A")
+                        {
+                            Console.WriteLine("Appending file...");
+                            reader = true;
+                            StreamWriter appending = new StreamWriter(initial_path, reader);
+                            save_result_to_file(appending, row,
+                                column, initial_path, newarr, reader);
+
+                            /*using (StreamWriter appending = new StreamWriter(path, true))
+                            {
+                                appending.WriteLine("appended text");
+                                appending.WriteLine(row);
+                                appending.WriteLine(column);
+                                for (int i = 0; i < row; i++)
+                                {
+                                    for (int j = 0; j < column; j++)
+                                    {
+                                        appending.WriteLine(newarr[i, j]);
+                                    }
+                                }
+                            }*/
+                            break;
+                        }
+                        else if (file_exist == "nf" || file_exist == "nF" || file_exist == "Nf" || file_exist == "NF")
+                        {
+                            Console.WriteLine("Creating new file...");
+                            Console.Write("Enter file name: ");
+                            string nfile = Console.ReadLine()!;
+                            while (File.Exists(nfile))
+                            {
+                                Console.Write("File already exists! Enter a different file name: ");
+                                nfile = Console.ReadLine()!;
+                            }
+
+                            StreamWriter new_file = new StreamWriter(nfile);
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid input, try again: ");
+                        }
+
+                    } while (file_exist != "rw" || file_exist != "rW" || file_exist != "Rw" || file_exist != "RW" ||
+                             file_exist != "a" || file_exist != "A" ||
+                             file_exist != "nf" || file_exist != "nF" || file_exist != "Nf" || file_exist != "NF");
+
+                }
+
+                //StreamWriter file = new StreamWriter(path);
+                break;
+            }
+            else if (save_initial == "n" || save_initial == "N")
+            {
+                Console.WriteLine("no");
+                break;
+            }
+            else
+                Console.WriteLine("Invalid input, try again: ");
+
+
+        } while (save_initial != "y" || save_initial != "Y" || save_initial == "n" || save_initial == "N");
+
+
+    }
     //Driver Code
     public static void Main(string[] args)
         {
@@ -43,7 +299,7 @@ class Program
             string? userchoice_sub;
             int mainmenu_option;
             int sub_option;
-            string path;
+            //string path;
         
 
             do
@@ -143,91 +399,16 @@ class Program
                                             }
                                             bubbleSort(newarr, row, column);
                                             //display sorted array
-                                            Console.WriteLine("Sorted Array");
-                                            for(int i = 0; i < row;i++)
-                                            {
-                                                for(int j = 0;j<column;j++)
-                                                {
-                                                    Console.Write("[{0}][{1}]:", i + 1, j + 1);
-                                                    Console.Write(newarr[i,j] + " "); 
-                                                }
-                                                Console.WriteLine(" ");
-                                            }
-                                            Console.WriteLine("Median is " + binaryMedian(newarr, row, column));
+                                            print_array(newarr, row, column);
 
-                                            string save_results;
-                                            Console.Write("Do you want to save results to a file?(y/n): ");
-                                            do
-                                            {
-                                                save_results = Console.ReadLine()!;
-                                                if (save_results == "y" || save_results == "Y")
-                                                {
-                                                    Console.WriteLine("yes");
-                                                    Console.Write("Enter file name: ");
-                                                    path = Console.ReadLine()!;
-                                                    if(File.Exists(path))
-                                                    {
-                                                        string file_exist;
-                                                        Console.WriteLine("File already exists! do you want to rewrite(rw), append(a) or create a new file(nf)?:");
-                                                        do
-                                                        {
-                                                            file_exist = Console.ReadLine()!;
-                                                            if(file_exist == "rw" || file_exist == "rW" || file_exist =="Rw" ||file_exist =="RW")
-                                                            {
-                                                                Console.WriteLine("Rewriting file...");
-                                                                using(StreamWriter rewrite = new StreamWriter(path,false))
-                                                                {
-                                                                    rewrite.WriteLine("rewriten text");
-                                                                }
-                                                                break;
-                                                            }
-                                                            else if(file_exist == "a" || file_exist =="A")
-                                                            {
-                                                                Console.WriteLine("Appending file...");
-                                                                using (StreamWriter appending = new StreamWriter(path, true))
-                                                                {
-                                                                    appending.WriteLine("appended text");
-                                                                }
-                                                                break;
-                                                            }
-                                                            else if(file_exist == "nf" || file_exist == "nF" || file_exist == "Nf" || file_exist == "NF")
-                                                            {
-                                                                Console.WriteLine("Creating new file...");
-                                                                Console.Write("Enter file name: ");
-                                                                string nfile = Console.ReadLine()!;
-                                                                while(File.Exists(nfile))
-                                                                {
-                                                                    Console.Write("File already exists! Enter a different file name: ");
-                                                                    nfile = Console.ReadLine()!;
-                                                                }
+                                            //Save to initial data file goes here
+                                            save_initial(newarr, row, column);
 
-                                                                StreamWriter new_file = new StreamWriter(nfile);
-                                                                break;
-                                                            }
-                                                            else
-                                                            {
-                                                                Console.WriteLine("Invalid input, try again: ");
-                                                            }
+                                            int Median = binaryMedian(newarr, row, column);
+                                            Console.WriteLine("Median is " + Median);
 
-                                                        } while (file_exist != "rw" || file_exist != "rW" || file_exist != "Rw" || file_exist != "RW" ||
-                                                                 file_exist != "a" || file_exist != "A" ||
-                                                                 file_exist != "nf" || file_exist != "nF" || file_exist != "Nf" || file_exist != "NF");
-                                                        
-                                                    }
-
-                                                    //StreamWriter file = new StreamWriter(path);
-                                                    break;
-                                                }
-                                                else if (save_results == "n" || save_results == "N")
-                                                {
-                                                    Console.WriteLine("no");
-                                                    break;
-                                                }
-                                                else
-                                                    Console.WriteLine("Invalid input, try again: ");
-
-
-                                            } while (save_results != "y" || save_results != "Y"|| save_results == "n" || save_results == "N");
+                                            //Save results to file
+                                            save_all_res(newarr, row, column);                                         
                                               
 
                                                 break;
@@ -336,6 +517,7 @@ class Program
             else
                 max = mid;
         }
+        int count = 0;
         for(int j = 0; j < r; j++)
         {
             for(int k=0;k<c;k++)
@@ -343,9 +525,12 @@ class Program
                 if (arr[j,k] == min)
                 {
                     Console.WriteLine("\nThe median index is:[{0}][{1}]", j+1,k+1);
+                    count++;
                 }
             }
         }
+        if(count>1)
+        { Console.WriteLine("Two indices represent the median"); }
        
         return min;
     }
