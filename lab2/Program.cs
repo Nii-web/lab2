@@ -1,8 +1,36 @@
 ﻿using System;
 using System.IO;
+using System.Xml.Linq;
 
 class Program
  {
+
+    static int inputValidation(string a,int b)
+    {
+        while ((!int.TryParse(a, out b)) || b <= 0)
+        {
+            Console.WriteLine("Invalid input");
+            a = Console.ReadLine()!;
+        }
+        return b;
+        /*while(b<=0)
+        {
+            Console.WriteLine("Invalid input");
+            a = Console.ReadLine()!;
+        }*/
+
+    }
+
+    static int getint(string a,int b)
+    {
+        while (!int.TryParse(a, out b))
+        {
+            Console.WriteLine("Invalid input");
+            Convert.ToInt32(Console.ReadLine()!);
+        }
+        return b;
+    }
+    //Driver Code
     public static void Main(string[] args)
         {
             Console.WriteLine("Аджей-Бой Нии Аджетей");
@@ -15,12 +43,11 @@ class Program
             string? userchoice_sub;
             int mainmenu_option;
             int sub_option;
-
-
+            string path;
+        
 
             do
             {
-
                 Console.WriteLine("Menu");
                 Console.WriteLine("1 - Start");
                 Console.WriteLine("2 - exit");
@@ -40,7 +67,11 @@ class Program
                         }
                         else
                         {
-                            switch (mainmenu_option)
+                        
+                        int row;
+                        int column;
+                        int element;
+                        switch (mainmenu_option)
                             {
                                 case 1:
                                     //Console.WriteLine("Valid input");
@@ -56,33 +87,137 @@ class Program
 
                                         int.TryParse(userchoice_sub, out sub_option);
 
-                                        switch (sub_option)
-                                        {
-                                            case 1:
-                                               
+                                    switch (sub_option)
+                                    {
+                                        case 1:
+                                            //Rows
+                                            Console.Write("Enter number of rows: ");
+                                            var rowString = Console.ReadLine()!;
+                                            int.TryParse(rowString, out row);
+                                            row = inputValidation(rowString, row);
 
-                                               
+                                            //Columns
+                                            Console.Write("Enter number of columns: ");
+                                            var colString = Console.ReadLine()!;
+                                            int.TryParse(colString, out column);
+                                            column = inputValidation(colString, column);
 
-                                                string save;
-                                                do
+
+                                            //int[] array_name = new int[array_size]; -- Defining a dynamic array
+                                            int[,] newarr = new int[row, column];
+
+                                            Console.WriteLine("Enter the elements of the array: ");
+                                            for (int i = 0; i < row; i++)
+                                            {
+                                                for (int j = 0; j < column; j++)
                                                 {
-                                                    Console.Write("Do you want to save results to file?(y,n): ");
-                                                    save = Console.ReadLine()!;
+                                                    //a:
 
-                                                    if (save == "y" || save == "Y")
+                                                    //"[" << i + 1 << "][" << j + 1 << "]: ";
+                                                    
+                                                    Console.Write("[{0}][{1}]: ", i + 1, j + 1);
+                                                    string elString = Console.ReadLine()!;
+                                                    //int.TryParse(elString, out element);
+                                                    //element = inputValidation(elString, element);
+                                                    bool isNumeric = int.TryParse(elString, out element);
+                                                    do
                                                     {
+                                                        if (isNumeric)
+                                                        {
+                                                            int.TryParse(elString, out element);
+                                                            newarr[i, j] = getint(elString, element);
+                                                        }
+                                                        else
+                                                        {
+                                                            Console.WriteLine("Invalid input");
+                                                            Console.Write("[{0}][{1}]: ", i + 1, j + 1);
+                                                            
+                                                            elString = Console.ReadLine()!;
+                                                            isNumeric = int.TryParse(elString, out element);
+                                                            //int.TryParse(elString, out element);
+                                                            newarr[i, j] = getint(elString, element);
+                                                        }
+                                                    } while (!isNumeric);
+                                                }
+                                                Console.WriteLine(" ");
+                                            }
+                                            Console.WriteLine("Median is " + binaryMedian(newarr, row, column));
 
+                                            string save_results;
+                                            Console.Write("Do you want to save results to a file?(y/n): ");
+                                            do
+                                            {
+                                                save_results = Console.ReadLine()!;
+                                                if (save_results == "y" || save_results == "Y")
+                                                {
+                                                    Console.WriteLine("yes");
+                                                    Console.Write("Enter file name: ");
+                                                    path = Console.ReadLine()!;
+                                                    if(File.Exists(path))
+                                                    {
+                                                        string file_exist;
+                                                        Console.WriteLine("File already exists! do you want to rewrite(rw), append(a) or create a new file(nf)?:");
+                                                        do
+                                                        {
+                                                            file_exist = Console.ReadLine()!;
+                                                            if(file_exist == "rw" || file_exist == "rW" || file_exist =="Rw" ||file_exist =="RW")
+                                                            {
+                                                                Console.WriteLine("Rewriting file...");
+                                                                using(StreamWriter rewrite = new StreamWriter(path,false))
+                                                                {
+                                                                    rewrite.WriteLine("rewriten text");
+                                                                }
+                                                                break;
+                                                            }
+                                                            else if(file_exist == "a" || file_exist =="A")
+                                                            {
+                                                                Console.WriteLine("Appending file...");
+                                                                using (StreamWriter appending = new StreamWriter(path, true))
+                                                                {
+                                                                    appending.WriteLine("appended text");
+                                                                }
+                                                                break;
+                                                            }
+                                                            else if(file_exist == "nf" || file_exist == "nF" || file_exist == "Nf" || file_exist == "NF")
+                                                            {
+                                                                Console.WriteLine("Creating new file...");
+                                                                Console.Write("Enter file name: ");
+                                                                string nfile = Console.ReadLine()!;
+                                                                while(File.Exists(nfile))
+                                                                {
+                                                                    Console.Write("File already exists! Enter a different file name: ");
+                                                                    nfile = Console.ReadLine()!;
+                                                                }
 
+                                                                StreamWriter new_file = new StreamWriter(nfile);
+                                                                break;
+                                                            }
+                                                            else
+                                                            {
+                                                                Console.WriteLine("Invalid input, try again: ");
+                                                            }
+
+                                                        } while (file_exist != "rw" || file_exist != "rW" || file_exist != "Rw" || file_exist != "RW" ||
+                                                                 file_exist != "a" || file_exist != "A" ||
+                                                                 file_exist != "nf" || file_exist != "nF" || file_exist != "Nf" || file_exist != "NF");
+                                                        
                                                     }
-                                                    else if (save == "n" || save == "N")
-                                                        break;
-                                                    else
-                                                        Console.WriteLine("Invalid input");
-                                                } while (save != "y" || save != "Y" || save == "n" || save == "N");
+
+                                                    //StreamWriter file = new StreamWriter(path);
+                                                    break;
+                                                }
+                                                else if (save_results == "n" || save_results == "N")
+                                                {
+                                                    Console.WriteLine("no");
+                                                    break;
+                                                }
+                                                else
+                                                    Console.WriteLine("Invalid input, try again: ");
 
 
-                                                
-                                                
+                                            } while (save_results != "y" || save_results != "Y"|| save_results == "n" || save_results == "N");
+                                              
+
                                                 break;
                                             case 2:
                                                 Console.WriteLine("File input");
@@ -192,7 +327,7 @@ class Program
         return min;
     }
 
-
+    //Sort array row-wise
     public static void bubbleSort(int[,]arr, int r, int c)
     {
         int temp;
