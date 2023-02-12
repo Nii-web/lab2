@@ -141,6 +141,18 @@ class Program
                                                 }
                                                 Console.WriteLine(" ");
                                             }
+                                            bubbleSort(newarr, row, column);
+                                            //display sorted array
+                                            Console.WriteLine("Sorted Array");
+                                            for(int i = 0; i < row;i++)
+                                            {
+                                                for(int j = 0;j<column;j++)
+                                                {
+                                                    Console.Write("[{0}][{1}]:", i + 1, j + 1);
+                                                    Console.Write(newarr[i,j] + " "); 
+                                                }
+                                                Console.WriteLine(" ");
+                                            }
                                             Console.WriteLine("Median is " + binaryMedian(newarr, row, column));
 
                                             string save_results;
@@ -274,21 +286,22 @@ class Program
         }
 
     // Function to find median in the matrix
-    static int binaryMedian(int[,] m, int r, int c)
+    static int binaryMedian(int[,] arr, int r, int c)
     {
         // r and c represent the row and column size correspondingly
         int max = int.MinValue;
         int min = int.MaxValue;
+        //int index;
 
         for (int i = 0; i < r; i++)
         {
             // Finding the minimum element
-            if (m[i, 0] < min)
-                min = m[i, 0];
+            if (arr[i, 0] < min)
+                min = arr[i, 0];
 
             // Finding the maximum element
-            if (m[i, c - 1] > max)
-                max = m[i, c - 1];
+            if (arr[i, c - 1] > max)
+                max = arr[i, c - 1];
         }
 
         int desired = (r * c + 1) / 2;
@@ -301,7 +314,7 @@ class Program
             // Find count of elements smaller than or equal to mid
             for (int i = 0; i < r; ++i)
             {
-                get = Array.BinarySearch(GetRow(m, i), mid);
+                get = Array.BinarySearch(GetRow(arr, i), mid);
 
                 // If element is not found in the array the binarySearch() method returns (-(insertion point) - 1).
                 // So once we know the insertion point we can find elements Smaller than the searched element by the following calculation
@@ -312,7 +325,7 @@ class Program
                 // which will give  the number of elements smaller than the number including the searched element.
                 else
                 {
-                    while (get < GetRow(m, i).GetLength(0) && m[i, get] == mid)
+                    while (get < GetRow(arr, i).GetLength(0) && arr[i, get] == mid)
                         get += 1;
                 }
 
@@ -324,6 +337,7 @@ class Program
             else
                 max = mid;
         }
+        Console.WriteLine("The median index is:[{0}][{1}]");
         return min;
     }
 
@@ -338,7 +352,7 @@ class Program
                 for (int k = 0; k < c - j - 1; k++)
                 {
                     
-                    if (arr[i,k] < arr[i,k + 1])
+                    if (arr[i,k] > arr[i,k + 1])
                     {
                         temp = arr[i,k];
                         arr[i, k] = arr[i,k + 1];
