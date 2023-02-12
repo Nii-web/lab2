@@ -291,7 +291,6 @@ class Program
         // r and c represent the row and column size correspondingly
         int max = int.MinValue;
         int min = int.MaxValue;
-        //int index;
 
         for (int i = 0; i < r; i++)
         {
@@ -337,7 +336,17 @@ class Program
             else
                 max = mid;
         }
-        Console.WriteLine("The median index is:[{0}][{1}]");
+        for(int j = 0; j < r; j++)
+        {
+            for(int k=0;k<c;k++)
+            {
+                if (arr[j,k] == min)
+                {
+                    Console.WriteLine("\nThe median index is:[{0}][{1}]", j+1,k+1);
+                }
+            }
+        }
+       
         return min;
     }
 
