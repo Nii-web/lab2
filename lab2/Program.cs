@@ -1,5 +1,6 @@
 ﻿using System.Reflection.PortableExecutable;
 using System.IO;
+using System.Drawing;
 
 class Program
  {
@@ -382,6 +383,7 @@ class Program
                         int row;
                         int column;
                         int element;
+                        int Median = 0;
                         switch (mainmenu_option)
                             {
                                 case 1:
@@ -450,11 +452,11 @@ class Program
                                             
 
                                             //Save to initial data file goes here
-                                            int Median = binaryMedian(newarr, row);
+                                            binaryMedian(newarr, row,ref Median);
                                             save_initial(newarr, row);
 
-                                            
-                                            Console.WriteLine("Median is " + Median);
+
+                                            Console.WriteLine("The median of the array has an index: [{0}] ", Median);
 
                                             //Save results to file
                                             save_all_res(newarr, row,Median);
@@ -523,7 +525,7 @@ class Program
                                                         {
                                                             Console.WriteLine(filearray[i]); 
                                                         }
-                                                        Median = binaryMedian(filearray, row);
+                                                        binaryMedian(filearray, row, ref Median);
                                                         save_initial(filearray, row);
                                                     }
                                                     
@@ -572,29 +574,53 @@ class Program
         }
 
     // Function to find median in the matrix
-    static int binaryMedian(int[] arr, int row)
+    static void binaryMedian(int[] arr, int row, ref int median)
     {
-        int lsum = 0,rsum = 0, mid_index = row;
-
-        for(int i = 0;i < row; i++)
+        int max = -1;
+        int min = arr[0];
+        int left_sum = 0;
+        int right_sum = 0;
+        for (int i = 1; i < row - 1; i++)
+        {  // Минимальная разность		 
+            left_sum = 0;
+            right_sum = 0;
+            for (int j = 0; j < i; j++)
+                left_sum += arr[j];
+            for (int k = i + 1; k < row; k++)
+                right_sum += arr[k];
+            if (Math.Abs(left_sum - right_sum) >= max)
+                max = Math.Abs(left_sum - right_sum);
+        }
+        for (int i = 1; i < row - 1; i++)
         {
-            lsum += arr[i];
-            rsum = 0;
-            for(int j = row;j>i;j--)
-            {
-                rsum += arr[j];
-            }
-            if(mid_index > Math.Abs(rsum-lsum))
-                mid_index = Math.Abs(rsum-lsum);
-            else
-            {
-                mid_index = i;
-                break;
-            }
-
+            left_sum = 0;
+            right_sum = 0;
+            for (int j = 0; j < i; j++)
+                left_sum += arr[j];
+            for (int k = i + 1; k < row; k++)
+                right_sum += arr[k];
+            if (Math.Abs(left_sum - right_sum) <= max)
+                max = Math.Abs(left_sum - right_sum);
         }
        
-        return mid_index;
+        int count = 0;
+        for (int i = 1; i < row - 1; i++)
+        {
+            left_sum = 0;
+            right_sum = 0;
+            for (int j = 0; j < i; j++)
+                left_sum += arr[j];
+            for (int k = i + 1; k < row; k++)
+                right_sum += arr[k];
+            if (Math.Abs(left_sum - right_sum) == max)
+            {
+                median = i+1;
+                count++;
+            }
+            if (count > 1)
+                break;
+        }
+        //return mid_index;
     }
     public static int[] GetRow(int[,] matrix,int row)
     {
