@@ -1,22 +1,15 @@
-﻿using System;
-using System.Data.Common;
+﻿using System.Reflection.PortableExecutable;
 using System.IO;
-using System.Reflection.PortableExecutable;
-using System.Text;
-using System.Xml.Linq;
 
 class Program
  {
-    static void print_array(int[,]newarr, int row, int column) 
+    static void print_array(int[]newarr, int row) 
     {
         Console.WriteLine("Sorted Array");
         for (int i = 0; i < row; i++)
         {
-            for (int j = 0; j < column; j++)
-            {
-                Console.Write("[{0}][{1}]:", i + 1, j + 1);
-                Console.Write(newarr[i, j] + " ");
-            }
+            Console.Write("[{0}]: ", i + 1);
+            Console.Write(newarr[i] + " ");
             Console.WriteLine(" ");
         }
     }
@@ -46,6 +39,33 @@ class Program
         }
         return b;
     }
+    static int file_inputValidation(string a, int b, StreamReader datastream)
+    {
+        while ((!int.TryParse(a, out b)) || b <= 0)
+        {
+            Console.WriteLine("File contains unsupported data type!");
+            break;
+        }
+        return b;
+    }
+    static bool isString_in_file(string a, int b, StreamReader datastream,bool isString)
+    {
+        if ((!int.TryParse(a, out b)) || b <= 0)
+        {
+            Console.WriteLine("File contains unsupported data type!");
+            return isString = true;
+        }
+        else
+        return isString = false;
+    }
+
+    static void get_file_int(string a,int b, StreamReader datastream)
+    {
+        if (!int.TryParse(a,out b))
+        {
+            Console.WriteLine("Invalid input, file contains unsupported data type!");
+        }
+    }
 
     static void save_result_to_file(StreamWriter method,int row, int column, string path, int[,] newarr)
     {
@@ -64,7 +84,7 @@ class Program
         
     }
 
-    static void save_all_res(int[,]newarr, int row, int column)
+    static void save_all_res(int[]newarr, int row, int median)
     {
         string save_results;
         Console.Write("Do you want to save results to a file?(y/n): ");
@@ -90,15 +110,12 @@ class Program
                             using (StreamWriter rewrite = new StreamWriter(path, false))
                             {
                                 rewrite.WriteLine(row);
-                                rewrite.WriteLine(column);
 
                                 for (int i = 0; i < row; i++)
                                 {
-                                    for (int j = 0; j < column; j++)
-                                    {
-                                        rewrite.WriteLine(newarr[i, j]);
-                                    }
+                                    rewrite.WriteLine(newarr[i]);
                                 }
+                                rewrite.WriteLine(median);
                                 rewrite.Close();
                             }
                             break;
@@ -111,15 +128,12 @@ class Program
                             using (StreamWriter app = new StreamWriter(path, true))
                             {
                                 app.WriteLine(row);
-                                app.WriteLine(column);
 
                                 for (int i = 0; i < row; i++)
                                 {
-                                    for (int j = 0; j < column; j++)
-                                    {
-                                        app.WriteLine(newarr[i, j]);
-                                    }
+                                    app.WriteLine(newarr[i]);
                                 }
+                                app.WriteLine(median);
                                 app.Close();
                             }
 
@@ -140,15 +154,12 @@ class Program
                             TextWriter new_file = new StreamWriter(nfile,true);
 
                             new_file.WriteLine(row);
-                            new_file.WriteLine(column);
 
                             for (int i = 0; i < row; i++)
                             {
-                                for (int j = 0; j < column; j++)
-                                {
-                                    new_file.WriteLine(newarr[i, j]);
-                                }
+                                new_file.WriteLine(newarr[i]);
                             }
+                            new_file.WriteLine(median);
                             new_file.Close();
                             break;
                         }
@@ -168,13 +179,9 @@ class Program
                     using FileStream fs = File.Create(path);
                     using var file = new StreamWriter(fs);
                     file.WriteLine(row);
-                    file.WriteLine(column);
                     for (int i = 0; i < row; i++)
                     {
-                        for (int j = 0; j < column; j++)
-                        {
-                            file.WriteLine(newarr[i, j]);
-                        }
+                        file.WriteLine(newarr[i]);
                     }
                     file.Close();
                 }
@@ -194,7 +201,7 @@ class Program
 
     }
 
-    static void save_initial(int[,]newarr, int row, int column)
+    static void save_initial(int[]newarr, int row)
     {
         Console.Write("Do you want to save initial data for file?(y/n)");
         string save_initial;
@@ -246,14 +253,10 @@ class Program
                             using (StreamWriter rewrite = new StreamWriter(initial_path, false))
                             {
                                 rewrite.WriteLine(row);
-                                rewrite.WriteLine(column);
 
                                 for (int i = 0; i < row; i++)
                                 {
-                                    for (int j = 0; j < column; j++)
-                                    {
-                                        rewrite.WriteLine(newarr[i, j]);
-                                    }
+                                    rewrite.WriteLine(newarr[i]);
                                 }
                                 rewrite.Close();
                             }  
@@ -265,14 +268,11 @@ class Program
                             using (StreamWriter app = new StreamWriter(initial_path, true))
                             {
                                 app.WriteLine(row);
-                                app.WriteLine(column);
+                               
 
                                 for (int i = 0; i < row; i++)
                                 {
-                                    for (int j = 0; j < column; j++)
-                                    {
-                                        app.WriteLine(newarr[i, j]);
-                                    }
+                                    app.WriteLine(newarr[i]);
                                 }
                                 app.Close();
                             } 
@@ -292,14 +292,11 @@ class Program
                             TextWriter new_file = new StreamWriter(nfile, true);
 
                             new_file.WriteLine(row);
-                            new_file.WriteLine(column);
+                            
 
                             for (int i = 0; i < row; i++)
                             {
-                                for (int j = 0; j < column; j++)
-                                {
-                                    new_file.WriteLine(newarr[i, j]);
-                                }
+                                new_file.WriteLine(newarr[i]);
                             }
                             new_file.Close();
                             break;
@@ -321,14 +318,10 @@ class Program
                     using var file = new StreamWriter(fs);
 
                     file.WriteLine(row);
-                    file.WriteLine(column);
 
                     for (int i = 0; i < row; i++)
                     {
-                        for (int j = 0; j < column; j++)
-                        {
-                            file.WriteLine(newarr[i, j]);
-                        }
+                        file.WriteLine(newarr[i]);
                     }
                     file.Close();
                 }
@@ -349,7 +342,7 @@ class Program
 
     }
     //Driver Code
-    public static void Main(string[] args)
+    public static void Main()
         {
             Console.WriteLine("Аджей-Бой Нии Аджетей");
             Console.WriteLine("Группа 414");
@@ -409,112 +402,161 @@ class Program
                                     {
                                         case 1:
                                             //Rows
-                                            Console.Write("Enter number of rows: ");
+                                            Console.Write("Enter number of size of array: ");
                                             var rowString = Console.ReadLine()!;
                                             int.TryParse(rowString, out row);
                                             row = inputValidation(rowString, row);
 
                                             //Columns
-                                            Console.Write("Enter number of columns: ");
+                                            /*
+                                             Console.Write("Enter number of columns: ");
                                             var colString = Console.ReadLine()!;
                                             int.TryParse(colString, out column);
-                                            column = inputValidation(colString, column);
+                                            column = inputValidation(colString, column);*/
 
 
                                             //int[] array_name = new int[array_size]; -- Defining a dynamic array
-                                            int[,] newarr = new int[row, column];
+                                            int[] newarr = new int[row];
 
                                             Console.WriteLine("Enter the elements of the array: ");
                                             for (int i = 0; i < row; i++)
                                             {
-                                                for (int j = 0; j < column; j++)
+                                                Console.Write("[{0}]: ", i + 1);
+                                                string elString = Console.ReadLine()!;
+                                                //int.TryParse(elString, out element);
+                                                //element = inputValidation(elString, element);
+                                                bool isNumeric = int.TryParse(elString, out element);
+                                                do
                                                 {
-                                                    //a:
-
-                                                    //"[" << i + 1 << "][" << j + 1 << "]: ";
-                                                    
-                                                    Console.Write("[{0}][{1}]: ", i + 1, j + 1);
-                                                    string elString = Console.ReadLine()!;
-                                                    //int.TryParse(elString, out element);
-                                                    //element = inputValidation(elString, element);
-                                                    bool isNumeric = int.TryParse(elString, out element);
-                                                    do
+                                                    if (isNumeric)
                                                     {
-                                                        if (isNumeric)
-                                                        {
-                                                            int.TryParse(elString, out element);
-                                                            newarr[i, j] = getint(elString, element);
-                                                        }
-                                                        else
-                                                        {
-                                                            Console.WriteLine("Invalid input");
-                                                            Console.Write("[{0}][{1}]: ", i + 1, j + 1);
-                                                            
-                                                            elString = Console.ReadLine()!;
-                                                            isNumeric = int.TryParse(elString, out element);
-                                                            //int.TryParse(elString, out element);
-                                                            newarr[i, j] = getint(elString, element);
-                                                        }
-                                                    } while (!isNumeric);
-                                                }
+                                                        int.TryParse(elString, out element);
+                                                        newarr[i] = getint(elString, element);
+                                                    }
+                                                    else
+                                                    {
+                                                        Console.WriteLine("Invalid input");
+                                                        Console.Write("[{0}]: ", i + 1);
+
+                                                        elString = Console.ReadLine()!;
+                                                        isNumeric = int.TryParse(elString, out element);
+                                                        //int.TryParse(elString, out element);
+                                                        newarr[i] = getint(elString, element);
+                                                    }
+                                                } while (!isNumeric);
                                                 Console.WriteLine(" ");
                                             }
-                                            bubbleSort(newarr, row, column);
-                                            //display sorted array
-                                            print_array(newarr, row, column);
+                                            
+                                            
 
                                             //Save to initial data file goes here
-                                            int Median = binaryMedian(newarr, row, column);
-                                            save_initial(newarr, row, column);
+                                            int Median = binaryMedian(newarr, row);
+                                            save_initial(newarr, row);
 
                                             
                                             Console.WriteLine("Median is " + Median);
 
                                             //Save results to file
-                                            save_all_res(newarr, row, column);                                         
-                                              
+                                            save_all_res(newarr, row,Median);
 
-                                                break;
-                                            case 2:
-                                                Console.WriteLine("File input");
+                                            break;
 
-                                                string file_name;
-                                                Console.Write("Enter file name to read data from: ");
-                                                file_name = Console.ReadLine()!;
+                                        case 2:
+                                            Console.WriteLine("File input");
+
+                                            string file_name;
+                                            Console.Write("Enter file name to read data from: ");
+                                            file_name = Console.ReadLine()!;
 
 
-                                                if (File.Exists(file_name))
-                                                {
-                                                    StreamReader dataStream = new StreamReader(file_name);
 
-                                                    string data = dataStream.ReadLine()!;
-
+                                            if (File.Exists(file_name))
+                                            {
+                                                //StreamReader dataStream = new StreamReader(file_name);
+                                                using var filestream = File.OpenRead(file_name);
                                                     
-                                                    break;
-                                                }
-                                                else
+
+                                                using (var dataStream = new StreamReader(file_name))
                                                 {
-                                                    Console.WriteLine("File does not exist in directory!");
-                                                    Console.WriteLine("Returning to previous menu");
-                                                    break;
+
+                                                    var row_file_String = dataStream.ReadLine()!;
+                                                    int.TryParse(row_file_String, out row);
+                                                    row = file_inputValidation(row_file_String, row, dataStream);
+
+                                                    var col_file_string = dataStream.ReadLine()!;
+                                                    int.TryParse(col_file_string, out row);
+                                                    column = file_inputValidation(col_file_string, row, dataStream);
+
+                                                    string line;
+                                                    int count = 0;
+
+                                                    while((line= dataStream.ReadLine()!) != null)
+                                                    {
+                                                        count++;
+                                                    }
+                                                    filestream.Close();
+
+                                                    File.OpenRead(file_name);
+                                                    if(row*column != count)
+                                                    {
+                                                        Console.WriteLine("Number of rows and columns does not correspond with number of elements in file!");
+                                                        break;
+                                                    }
+                                                    else
+                                                    {
+                                                        line = "";
+                                                        dataStream.ReadLine();
+                                                        dataStream.ReadLine();
+
+                                                         int[] filearray = new int[row*column];
+                                                        using(TextReader reader = File.OpenText(file_name))
+                                                        {
+                                                            reader.ReadLine();
+                                                            reader.ReadLine();
+                                                            for(int i = 0;i<(row*column);i++)
+                                                            {
+                                                                filearray[i] = int.Parse(reader.ReadLine()!);
+                                                            }
+                                                        }
+
+                                                        for (int i = 0; i < (row * column); i++)
+                                                        {
+                                                            Console.WriteLine(filearray[i]); 
+                                                        }
+                                                        Median = binaryMedian(filearray, row);
+                                                        save_initial(filearray, row);
+                                                    }
+                                                    
+
+
+
+
+
+
+                                                    /*string elString = dataStream.ReadLine()!;
+                                                int file_element;
+                                                bool isNumeric = int.TryParse(elString, out file_element);*/
                                                 }
-;
-                                            case 3:
-                                                Console.WriteLine("Returning to main menu...");
                                                 break;
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine("File does not exist in directory!");
+                                                Console.WriteLine("Returning to previous menu");
+                                                break;
+                                            }
+;
+                                        case 3:
+                                            Console.WriteLine("Returning to main menu...");
+                                            break;
                                         }
 
                                     } while (sub_option != 3);
                                     break;
                                 case 2:
-                                    Console.WriteLine("exiting program");
+                                    Console.WriteLine("Exiting program...");
                                     break;
-
                             }
-
-
-
-
                         }
                     }
                     else
@@ -530,97 +572,29 @@ class Program
         }
 
     // Function to find median in the matrix
-    static int binaryMedian(int[,] arr, int r, int c)
+    static int binaryMedian(int[] arr, int row)
     {
-        // r and c represent the row and column size correspondingly
-        int max = int.MinValue;
-        int min = int.MaxValue;
+        int lsum = 0,rsum = 0, mid_index = row;
 
-        for (int i = 0; i < r; i++)
+        for(int i = 0;i < row; i++)
         {
-            // Finding the minimum element
-            if (arr[i, 0] < min)
-                min = arr[i, 0];
-
-            // Finding the maximum element
-            if (arr[i, c - 1] > max)
-                max = arr[i, c - 1];
-        }
-
-        int desired = (r * c + 1) / 2;
-        while (min < max)
-        {
-            int mid = min + (max - min) / 2;
-            int place = 0;
-            int get = 0;
-
-            // Find count of elements smaller than or equal to mid
-            for (int i = 0; i < r; ++i)
+            lsum += arr[i];
+            rsum = 0;
+            for(int j = row;j>i;j--)
             {
-                get = Array.BinarySearch(GetRow(arr, i), mid);
-
-                // If element is not found in the array the binarySearch() method returns (-(insertion point) - 1).
-                // So once we know the insertion point we can find elements Smaller than the searched element by the following calculation
-                if (get < 0)
-                    get = Math.Abs(get) - 1;
-
-                // If element is found in the array it returns the index(any index in case of duplicate). So we go to last index of element
-                // which will give  the number of elements smaller than the number including the searched element.
-                else
-                {
-                    while (get < GetRow(arr, i).GetLength(0) && arr[i, get] == mid)
-                        get += 1;
-                }
-
-                place = place + get;
+                rsum += arr[j];
             }
-
-            if (place < desired)
-                min = mid + 1;
+            if(mid_index > Math.Abs(rsum-lsum))
+                mid_index = Math.Abs(rsum-lsum);
             else
-                max = mid;
-        }
-        int count = 0;
-        for(int j = 0; j < r; j++)
-        {
-            for(int k=0;k<c;k++)
             {
-                if (arr[j,k] == min)
-                {
-                    Console.WriteLine("\nThe median index is:[{0}][{1}]", j+1,k+1);
-                    count++;
-                }
+                mid_index = i;
+                break;
             }
+
         }
-        if(count>1)
-        { Console.WriteLine("Two indices represent the median"); }
        
-        return min;
-    }
-
-    //Sort array row-wise
-    public static void bubbleSort(int[,]arr, int r, int c)
-    {
-        int temp;
-        for (int i = 0; i < r; i++)
-        {
-            for (int j = 0; j < c; j++)
-            {
-                for (int k = 0; k < c - j - 1; k++)
-                {
-                    
-                    if (arr[i,k] > arr[i,k + 1])
-                    {
-                        temp = arr[i,k];
-                        arr[i, k] = arr[i,k + 1];
-                        arr[i,k + 1] = temp;
-                        //swap(arr[i][k], arr[i][k + 1]);
-                       
-                    }
-                }
-            }
-        }
-
+        return mid_index;
     }
     public static int[] GetRow(int[,] matrix,int row)
     {
