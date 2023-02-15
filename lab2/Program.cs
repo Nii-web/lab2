@@ -510,7 +510,7 @@ class Program
                                                         dataStream.ReadLine();
                                                         dataStream.ReadLine();
 
-                                                         int[] filearray = new int[row*column];
+                                                        int[] filearray = new int[row*column];
                                                         using(TextReader reader = File.OpenText(file_name))
                                                         {
                                                             reader.ReadLine();
@@ -527,6 +527,11 @@ class Program
                                                         }
                                                         binaryMedian(filearray, row, ref Median);
                                                         save_initial(filearray, row);
+
+                                                        Console.WriteLine("The median of the array has an index: [{0}] ", Median);
+
+                                                        //Save results to file
+                                                        save_all_res(filearray, row, Median);
                                                     }
                                                     
 
