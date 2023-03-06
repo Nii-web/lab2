@@ -2,7 +2,7 @@
 using System.IO;
 using System.Drawing;
 
-class Program
+public class Binary
  {
     static void print_array(int[]newarr, int row) 
     {
@@ -23,12 +23,6 @@ class Program
             a = Console.ReadLine()!;
         }
         return b;
-        /*while(b<=0)
-        {
-            Console.WriteLine("Invalid input");
-            a = Console.ReadLine()!;
-        }*/
-
     }
 
     static int getint(string a,int b)
@@ -49,42 +43,7 @@ class Program
         }
         return b;
     }
-    static bool isString_in_file(string a, int b, StreamReader datastream,bool isString)
-    {
-        if ((!int.TryParse(a, out b)) || b <= 0)
-        {
-            Console.WriteLine("File contains unsupported data type!");
-            return isString = true;
-        }
-        else
-        return isString = false;
-    }
-
-    static void get_file_int(string a,int b, StreamReader datastream)
-    {
-        if (!int.TryParse(a,out b))
-        {
-            Console.WriteLine("Invalid input, file contains unsupported data type!");
-        }
-    }
-
-    static void save_result_to_file(StreamWriter method,int row, int column, string path, int[,] newarr)
-    {
-        //using var rewrite = new StreamWriter(fs);
-        //rewrite = new StreamWriter(path, app);
-        method.WriteLine(row);
-        method.WriteLine(column);
-        //string? file_str;
-        for (int i = 0; i < row; i++)
-        {
-            for (int j = 0; j < column; j++)
-            {
-                method.WriteLine(newarr[i,j]);
-            }
-        }
-        
-    }
-
+   
     static void save_all_res(int[]newarr, int row, int median)
     {
         string save_results;
@@ -177,14 +136,29 @@ class Program
 
                 else
                 {
-                    using FileStream fs = File.Create(path);
-                    using var file = new StreamWriter(fs);
-                    file.WriteLine(row);
-                    for (int i = 0; i < row; i++)
+                    if (path == "con")
                     {
-                        file.WriteLine(newarr[i]);
+                        //work with con
+                        do
+                        {
+                            Console.WriteLine("This file name is not allowed! Enter a different name: ");
+                            path = Console.ReadLine()!;
+                        } while (path == "con");
+
                     }
-                    file.Close();
+                    else
+                    {
+                        using FileStream fs = File.Create(path);
+                        using var file = new StreamWriter(fs);
+                        file.WriteLine(row);
+                        for (int i = 0; i < row; i++)
+                        {
+                            file.WriteLine(newarr[i]);
+                        }
+                        file.Close();
+                    }
+                    
+                    
                 }
                 //StreamWriter file = new StreamWriter(path);
                 break;
@@ -214,28 +188,6 @@ class Program
                 Console.WriteLine("yes");
                 Console.Write("Enter file name: ");
                 string initial_path = Console.ReadLine()!;
-
-                /*if (!File.Exists(initial_path))
-                { // Create a file to write to
-                    //StreamWriter rewrite = new StreamWriter(initial_path);
-
-                   
-
-                    int tmp = 7;
-                    for(int i = 0;i<row;i++)
-                    {
-                        for(int j=0; j<column;j++)
-                        {
-                            sw.WriteLine(newarr[i,j]);
-                        }
-                    }
-
-                    sw.WriteLine(tmp);
-                }
-                else
-                {
-                    Console.WriteLine("File already exists! do you want to rewrite(rw), append(a) or create a new file(nf)?:");
-                }*/
 
 
                 if (File.Exists(initial_path))
@@ -315,6 +267,31 @@ class Program
 
                 else
                 {
+                    bool file_ok;
+                    do
+                    {
+                        try
+                        {
+                            using FileStream file_sys = File.Create(initial_path);
+                            if (file_sys != null)
+                                file_sys.Close();
+                            file_ok = true;
+                        }
+                        catch (ArgumentException)
+                        {
+                            Console.WriteLine("Invalid file name! Enter a different name: ");
+                            initial_path = Console.ReadLine()!;
+                            file_ok =  false;
+                        }
+                        catch (IOException)
+                        {
+                            Console.WriteLine("Invalid file name! Enter a different name: ");
+                            initial_path = Console.ReadLine()!;
+                            file_ok = false;
+                        }
+                    } while (file_ok == false);
+                    
+
                     using FileStream fs = File.Create(initial_path);
                     using var file = new StreamWriter(fs);
 
@@ -324,7 +301,28 @@ class Program
                     {
                         file.WriteLine(newarr[i]);
                     }
-                    file.Close();
+                    /*if (initial_path == "con")
+                    {
+                        //work with con
+                        do
+                        {
+                            Console.WriteLine("This file name is not allowed! Enter a different name: ");
+                            initial_path = Console.ReadLine()!;
+                        } while (initial_path == "con");
+
+                    }*/
+                    /* else
+                     {
+                         using FileStream fs = File.Create(initial_path);
+                         using var file = new StreamWriter(fs);
+
+                         file.WriteLine(row);
+
+                         for (int i = 0; i < row; i++)
+                         {
+                             file.WriteLine(newarr[i]);
+                         }
+                     }*/
                 }
                 //StreamWriter file = new StreamWriter(path);
                 break;
@@ -355,7 +353,6 @@ class Program
             string? userchoice_sub;
             int mainmenu_option;
             int sub_option;
-            //string path;
         
 
             do
@@ -380,14 +377,13 @@ class Program
                         else
                         {
                         
-                        int row;
-                        int column;
+                        int size;
+                        //int column;
                         int element;
                         int Median = 0;
                         switch (mainmenu_option)
                             {
                                 case 1:
-                                    //Console.WriteLine("Valid input");
                                     do
                                     {
 
@@ -406,27 +402,19 @@ class Program
                                             //Rows
                                             Console.Write("Enter number of size of array: ");
                                             var rowString = Console.ReadLine()!;
-                                            int.TryParse(rowString, out row);
-                                            row = inputValidation(rowString, row);
-
-                                            //Columns
-                                            /*
-                                             Console.Write("Enter number of columns: ");
-                                            var colString = Console.ReadLine()!;
-                                            int.TryParse(colString, out column);
-                                            column = inputValidation(colString, column);*/
+                                            int.TryParse(rowString, out size);
+                                            size = inputValidation(rowString, size);
 
 
                                             //int[] array_name = new int[array_size]; -- Defining a dynamic array
-                                            int[] newarr = new int[row];
+                                            int[] newarr = new int[size];
 
                                             Console.WriteLine("Enter the elements of the array: ");
-                                            for (int i = 0; i < row; i++)
+                                            for (int i = 0; i < size; i++)
                                             {
                                                 Console.Write("[{0}]: ", i + 1);
                                                 string elString = Console.ReadLine()!;
-                                                //int.TryParse(elString, out element);
-                                                //element = inputValidation(elString, element);
+
                                                 bool isNumeric = int.TryParse(elString, out element);
                                                 do
                                                 {
@@ -442,7 +430,6 @@ class Program
 
                                                         elString = Console.ReadLine()!;
                                                         isNumeric = int.TryParse(elString, out element);
-                                                        //int.TryParse(elString, out element);
                                                         newarr[i] = getint(elString, element);
                                                     }
                                                 } while (!isNumeric);
@@ -452,14 +439,14 @@ class Program
                                             
 
                                             //Save to initial data file goes here
-                                            binaryMedian(newarr, row,ref Median);
-                                            save_initial(newarr, row);
+                                            binaryMedian(newarr, size,ref Median);
+                                            save_initial(newarr, size);
 
 
                                             Console.WriteLine("The median of the array has an index: [{0}] ", Median);
 
                                             //Save results to file
-                                            save_all_res(newarr, row,Median);
+                                            save_all_res(newarr, size,Median);
 
                                             break;
 
@@ -482,12 +469,9 @@ class Program
                                                 {
 
                                                     var row_file_String = dataStream.ReadLine()!;
-                                                    int.TryParse(row_file_String, out row);
-                                                    row = file_inputValidation(row_file_String, row, dataStream);
+                                                    int.TryParse(row_file_String, out size);
+                                                    size = file_inputValidation(row_file_String, size, dataStream);
 
-                                                    var col_file_string = dataStream.ReadLine()!;
-                                                    int.TryParse(col_file_string, out row);
-                                                    column = file_inputValidation(col_file_string, row, dataStream);
 
                                                     string line;
                                                     int count = 0;
@@ -499,7 +483,7 @@ class Program
                                                     filestream.Close();
 
                                                     File.OpenRead(file_name);
-                                                    if(row*column != count)
+                                                    if(size != count)
                                                     {
                                                         Console.WriteLine("Number of rows and columns does not correspond with number of elements in file!");
                                                         break;
@@ -508,41 +492,30 @@ class Program
                                                     {
                                                         line = "";
                                                         dataStream.ReadLine();
-                                                        dataStream.ReadLine();
 
-                                                        int[] filearray = new int[row*column];
+                                                        int[] filearray = new int[size];
                                                         using(TextReader reader = File.OpenText(file_name))
                                                         {
                                                             reader.ReadLine();
-                                                            reader.ReadLine();
-                                                            for(int i = 0;i<(row*column);i++)
+                                                            for(int i = 0;i<(size);i++)
                                                             {
                                                                 filearray[i] = int.Parse(reader.ReadLine()!);
                                                             }
                                                         }
 
-                                                        for (int i = 0; i < (row * column); i++)
+                                                        for (int i = 0; i < (size); i++)
                                                         {
-                                                            Console.WriteLine(filearray[i]); 
+                                                            Console.Write("[{0}]: ",i+1);
+                                                            Console.WriteLine(filearray[i]);
                                                         }
-                                                        binaryMedian(filearray, row, ref Median);
-                                                        save_initial(filearray, row);
+                                                        binaryMedian(filearray, size, ref Median);
+                                                        save_initial(filearray, size);
 
                                                         Console.WriteLine("The median of the array has an index: [{0}] ", Median);
 
                                                         //Save results to file
-                                                        save_all_res(filearray, row, Median);
+                                                        save_all_res(filearray, size, Median);
                                                     }
-                                                    
-
-
-
-
-
-
-                                                    /*string elString = dataStream.ReadLine()!;
-                                                int file_element;
-                                                bool isNumeric = int.TryParse(elString, out file_element);*/
                                                 }
                                                 break;
                                             }
@@ -579,43 +552,43 @@ class Program
         }
 
     // Function to find median in the matrix
-    static void binaryMedian(int[] arr, int row, ref int median)
+    public static void binaryMedian(int[] arr, int size, ref int median)
     {
         int max = -1;
         int min = arr[0];
         int left_sum = 0;
         int right_sum = 0;
-        for (int i = 1; i < row - 1; i++)
-        {  // Минимальная разность		 
+        for (int i = 1; i < size - 1; i++)
+        {  // minimal difference	 
             left_sum = 0;
             right_sum = 0;
             for (int j = 0; j < i; j++)
                 left_sum += arr[j];
-            for (int k = i + 1; k < row; k++)
+            for (int k = i + 1; k < size; k++)
                 right_sum += arr[k];
             if (Math.Abs(left_sum - right_sum) >= max)
                 max = Math.Abs(left_sum - right_sum);
         }
-        for (int i = 1; i < row - 1; i++)
+        for (int i = 1; i < size - 1; i++)
         {
             left_sum = 0;
             right_sum = 0;
             for (int j = 0; j < i; j++)
                 left_sum += arr[j];
-            for (int k = i + 1; k < row; k++)
+            for (int k = i + 1; k < size; k++)
                 right_sum += arr[k];
             if (Math.Abs(left_sum - right_sum) <= max)
                 max = Math.Abs(left_sum - right_sum);
         }
        
         int count = 0;
-        for (int i = 1; i < row - 1; i++)
+        for (int i = 1; i < size - 1; i++)
         {
             left_sum = 0;
             right_sum = 0;
             for (int j = 0; j < i; j++)
                 left_sum += arr[j];
-            for (int k = i + 1; k < row; k++)
+            for (int k = i + 1; k < size; k++)
                 right_sum += arr[k];
             if (Math.Abs(left_sum - right_sum) == max)
             {
@@ -625,17 +598,6 @@ class Program
             if (count > 1)
                 break;
         }
-        //return mid_index;
-    }
-    public static int[] GetRow(int[,] matrix,int row)
-    {
-        var rowLength = matrix.GetLength(1);
-        var rowVector = new int[rowLength];
-
-        for (var i = 0; i < rowLength; i++)
-            rowVector[i] = matrix[row, i];
-
-        return rowVector;
     }
 }
 
